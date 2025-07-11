@@ -1,0 +1,1 @@
+﻿global using Vector2 = System.Numerics.Vector2;
