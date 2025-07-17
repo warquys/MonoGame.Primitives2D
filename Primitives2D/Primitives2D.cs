@@ -266,7 +266,51 @@ namespace MonoGame
             DrawLine(spriteBatch, new Vector2(rect.X, rect.Bottom), new Vector2(rect.Right, rect.Bottom), color, thickness); // bottom
             DrawLine(spriteBatch, new Vector2(rect.Right + 1f, rect.Y), new Vector2(rect.Right + 1f, rect.Bottom + thickness), color, thickness); // right
         }
+        
+        
+        /// <summary>
+        /// Dessine un rectangle avec une épaisseur donnée et une rotation (en radians).
+        /// </summary>
+        /// <param name="spriteBatch">Surface de dessin de destination</param>
+        /// <param name="rect">Rectangle à dessiner</param>
+        /// <param name="color">Couleur du rectangle</param>
+        /// <param name="thickness">Épaisseur des lignes</param>
+        /// <param name="angle">Angle de rotation en radians</param>
+        public static void DrawRectangle(this SpriteBatch spriteBatch, Rectangle rect, Color color, float thickness, float angle)
+        {
+            var center = rect.Center;
+            var matrix = Matrix.CreateTranslation(-center.X, -center.Y, 0)
+                       * Matrix.CreateRotationZ(angle)
+                       * Matrix.CreateTranslation(center.X, center.Y, 0);
+            DrawRectangle(spriteBatch, rect, color, thickness, matrix);
+        }
 
+        /// <summary>
+        /// Dessine un rectangle avec une épaisseur donnée et une transformation par matrice.
+        /// </summary>
+        /// <param name="spriteBatch">Surface de dessin de destination</param>
+        /// <param name="rect">Rectangle à dessiner</param>
+        /// <param name="color">Couleur du rectangle</param>
+        /// <param name="thickness">Épaisseur des lignes</param>
+        /// <param name="transform">Matrice de transformation à appliquer</param>
+        public static void DrawRectangle(this SpriteBatch spriteBatch, Rectangle rect, Color color, float thickness, Matrix transform)
+        {
+            // TODO: COMPRENDRE POURQUOI LA TRANFORMATION EST APPLIQUER LE SUR LE COIN BAS DROIT ET NON COIN HAUT GAUCHE
+            Vector2 topLeft = new Vector2(rect.Left, rect.Top);
+            Vector2 topRight = new Vector2(rect.Right, rect.Top);
+            Vector2 bottomRight = new Vector2(rect.Right, rect.Bottom);
+            Vector2 bottomLeft = new Vector2(rect.Left, rect.Bottom);
+
+            topLeft = Vector2.Transform(topLeft, transform);
+            topRight = Vector2.Transform(topRight, transform);
+            bottomRight = Vector2.Transform(bottomRight, transform);
+            bottomLeft = Vector2.Transform(bottomLeft, transform);
+
+            DrawLine(spriteBatch, topLeft, topRight, color, thickness);
+            DrawLine(spriteBatch, topRight, bottomRight, color, thickness);
+            DrawLine(spriteBatch, bottomRight, bottomLeft, color, thickness);
+            DrawLine(spriteBatch, bottomLeft, topLeft, color, thickness);
+        }
 
         /// <summary>
         /// Draws a rectangle with the thickness provided
